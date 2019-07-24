@@ -1,0 +1,27 @@
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <servlet>
+        <servlet-name>HelloServlet</servlet-name>
+        <servlet-class>com.funtl.hello.maven.servlet.HelloServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HelloServlet</servlet-name>
+        <url-pattern>/servlet/hello</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+
+</web-app>
+```
+
