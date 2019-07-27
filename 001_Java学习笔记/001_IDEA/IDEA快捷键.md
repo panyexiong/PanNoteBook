@@ -26,5 +26,18 @@
 
    `ctrl + w`
 
-8. 
+8. 快速打出
+
+   ```java
+   fori
+   for (int i = 0; i < arr.length - 1; i++) {
+   
+   }
+   ```
+
+9. try catch快捷键
+
+   `ctrl + alt + t`
+
+10. 
 
