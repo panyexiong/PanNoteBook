@@ -22,6 +22,8 @@ public void test02() {
 }
 ```
 
+结果：
+
 ```shell
 true
 false
