@@ -224,3 +224,42 @@ public class Demo01 {
   ```
 
 ## Vector源码分析
+
+创建对象时，底层创建了长度为10的数组
+
+扩容:扩容为原来的2倍
+
+```java
+private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    int newCapacity = oldCapacity + ((capacityIncrement > 0) ?
+                                     capacityIncrement : oldCapacity);
+    if (newCapacity - minCapacity < 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE > 0)
+        newCapacity = hugeCapacity(minCapacity);
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+```
+
+## 面试题
+
+```java
+@Test
+public void testListRemove(){
+    List list = new ArrayList();
+    //add中的数值自动装箱，按顺序存值
+    list.add(1);
+    list.add(2);
+    list.add(3);
+    //remove方法按索引位置删除值
+    list.remove(2);
+    //手动装箱，删除2
+    list.remove(new Integer(2));
+    System.out.println(list);
+}
+//out
+[1]
+```
+
