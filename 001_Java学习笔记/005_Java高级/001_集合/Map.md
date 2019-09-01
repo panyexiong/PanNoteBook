@@ -94,3 +94,142 @@ public HashMap() {
 }
 ```
 
+## Map接口的常用方法
+
+- 元视图操作的方法：
+
+  - Set keySet()：返回所有key构成的Set集合
+  - Collection values()：返回所有value构成的Collection集合
+  - Set entrySet()：返回所有key-value构成的Set集合
+
+  ```java
+  import java.util.*;
+  
+  /**
+   * @author panyexiong
+   * @version 1.0
+   * @date 2019/8/30 13:23
+   */
+  public class HashMapTest {
+      public static void main(String[] args) {
+          Map<Integer, Integer> map = new HashMap<>();
+          map.put(1, 1);
+          map.put(2, 4);
+          map.put(3, 3);
+          map.put(4, 2);
+  
+          Set set = map.keySet();
+          Iterator iterator = set.iterator();
+          while (iterator.hasNext()) {
+              System.out.print(iterator.next() + " ");
+          }
+          System.out.println();
+  
+          Collection collection = map.values();
+          Iterator iterator1 = collection.iterator();
+          while (iterator1.hasNext()) {
+              System.out.print(iterator1.next() + " ");
+          }
+          System.out.println();
+  
+          Set set1 = map.entrySet();
+          for (Object obj :
+                  set1) {
+              System.out.print(obj + " ");
+          }
+          System.out.println();
+      }
+  }
+  
+  //out
+  1 2 3 4 
+  1 4 3 2 
+  1=1 2=4 3=3 4=2 
+  ```
+
+  总结：
+
+  - 添加：put(Object key, Object value)
+  - 删除：remove(Object key)
+  - 修改：put(Object key, Object value)
+  - 查询：get(Object key)
+  - 长度：size()
+  - 遍历：keySet();values();entrySet()
+
+## TreeMap
+
+```java
+package com.pan.commonClasses.map.TreeMapTest;
+
+import org.junit.Test;
+
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+
+/**
+ * @author panyexiong
+ * @version 1.0
+ * @date 2019/8/30 20:05
+ */
+public class Demo01 {
+
+    /**
+     * 自然排序
+     */
+    @Test
+    public void test01() {
+        //向TreeMap中添加key-value，要求key必须是由同一个类创建的对象
+        TreeMap<User, Integer> treeMap = new TreeMap<>();
+
+        User user1 = new User("Tom", 21);
+        User user2 = new User("Jerry", 32);
+        User user3 = new User("Jack", 18);
+        User user4 = new User("Rose", 41);
+        treeMap.put(user1, 98);
+        treeMap.put(user2, 89);
+        treeMap.put(user3, 70);
+        treeMap.put(user4, 92);
+
+        Set set = treeMap.entrySet();
+        Iterator iterator = set.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+    }
+
+    /**
+     * 定制排序
+     */
+    @Test
+    public void test02() {
+        TreeMap<User, Integer> treeMap = new TreeMap<>(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return Integer.compare(o1.getAge(),o2.getAge());
+            }
+        });
+
+        User user1 = new User("Tom", 21);
+        User user2 = new User("Jerry", 32);
+        User user3 = new User("Jack", 18);
+        User user4 = new User("Rose", 41);
+        treeMap.put(user1, 98);
+        treeMap.put(user2, 89);
+        treeMap.put(user3, 70);
+        treeMap.put(user4, 92);
+
+        Set set = treeMap.entrySet();
+        Iterator iterator = set.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+    }
+}
+```
+
+## Properties
+
+常用来处理配值文件。key和value都是String类型。
+
