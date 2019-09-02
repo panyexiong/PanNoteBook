@@ -302,3 +302,20 @@ Thread01	 invoked myUnLock()
 Thread02	 invoked myUnLock()
 ```
 
+## synchronized和Lock有什么区别
+
+1. synchronized是关键字，属于JVM层面；Lock是具体类（java.util.concurrent.locks.lock）是api层面的锁。
+2. 使用方法：
+   1. synchronized不需要用户手动释放锁，当synchronized代码执行完成后系统会自动让线程释放对所的占用。
+   2. ReentranLock则需要用户手动释放锁，若没有手动释放锁，就有可能导致死锁的状态。
+3. 等待是否可中断
+   1. synchronized不可中断，除非抛出异常或者正常运行完成。
+   2. ReentrantLock可中断
+      1. 设置超时方法tryLock（long timeout,TimeUnit unit）
+      2. lockInterruptibly()放入代码块中，调用interrupt（）方法可中断
+4. 加锁是否公平
+   1. synchronized和ReentrantLock都是非公平锁。
+5. 锁绑定多个条件Condition
+   1. synchronized没有
+   2. ReentrantLock用来实现分组唤醒需要唤醒的线程们，可以精确唤醒，而不是向synchronized要么随机唤醒一个线程要么全部唤醒。
+
