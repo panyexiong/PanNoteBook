@@ -16,11 +16,11 @@
 
 JDK7有点像单例模式中的饿汉式，JDK8有点像懒汉式，延时了数组的创建，节省内存。
 
-### JDK_7：
+### JDK_7
 
 JDK7中，new一个ArrayList的时候，会直接创建大小为10的Object数组。
 
-### JDK_8：
+### JDK_8
 
 ```java
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import java.util.ArrayList;
 public class Demo01 {
     public static void main(String[] args) {
         ArrayList arrayList = new ArrayList();		//1
-        arrayList.add(1);						//2
-        arrayList.add(2);						//3
+        arrayList.add(1);						    //2
+        arrayList.add(2);						    //3
     }
 }
 
@@ -41,7 +41,7 @@ public class Demo01 {
 
 1. 第一步，new一个ArrayList的时候，底层new一个Object类型的数组：Object[] elementData，调用了ArrayList类中的空参构造方法将其设置为空数组。
 
-   注意：JDK8中elementData数组创建时为空，源码解释为错误。`Constructs an empty list with an initial capacity of ten.`。第一次调用add（）方法时，底层才创建了长度10的数据，并将数据添加到第一个位置上。
+   注意：JDK8中elementData数组创建时为空，源码解释为错误。`Constructs an empty list with an initial capacity of ten.`。第一次调用add()方法时，底层才创建了长度10的数据，并将数据添加到第一个位置上。
 
    ```java
        /**
@@ -51,6 +51,8 @@ public class Demo01 {
             //DEFAULTCAPACITY_EMPTY_ELEMENTDATA为空
            this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
        }
+       
+        private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
    ```
 
 2. 第二步，第一次向arrayList中添加数据的时候，ArrayList类中的add方法会调用一个ensureCapacityInternal方法，传入一个参数，当前数组elementData大小+1。在这个方法里面会判断第一步new出来的elementData数组是不是为空即是不是第一次创建，若为空则返回一个默认的值DEFAULT_CAPACITY=10。判断10是不是比当前数组elementData的长度大，大则通过grow(minCapacity)方法将数组扩容。
@@ -262,4 +264,3 @@ public void testListRemove(){
 //out
 [1]
 ```
-
