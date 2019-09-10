@@ -68,26 +68,54 @@
       ```
 
    2. key的hash值是如何计算的来的呢？
-
-      调用了hashMap中的`hash()`方法，如果key为null，则返回0，这也就是为什么HashMap可以存储key==null的原因。如果key！=null，则通过key所属类的`hashCode()`方法计算器hashCode值，再将其与自身无符号右移16位得到的值相异或，最终返回这个值。为什么要这样做？防止在后面计算新元素在Node数组中插入位置的索引的时候，尽可能避免hash冲突。
-
+      1. 调用了hashMap中的`hash()`方法，如果key为null，则返回0，这也就是为什么HashMap可以存储key==null的原因。如果key！=null，则通过key所属类的`hashCode()`方法计算器hashCode值，再将其与自身无符号右移16位得到的值相异或，最终返回这个值。为什么要这样做？防止在后面计算新元素在Node数组中插入位置的索引的时候，尽可能避免hash冲突。
+      2. 补充说明：
+      1. Integer类的hashCode方法就直接返回传入的值;
+         2. String类的hashCode方法
+         3. Boolean类的hashCode方法，如果为true则返回1231，false返回1237(为什么？)。
+   
+   
       ```java
       static final int hash(Object key) {
-          int h;
+       int h;
           return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+   }
+      
+   //Integer.java
+      public static int hashCode(int value) {
+       return value;
+      }
+   
+      //String.java
+   public int hashCode() {
+          int h = hash;
+          if (h == 0 && value.length > 0) {
+              char val[] = value;
+      
+              for (int i = 0; i < value.length; i++) {
+                  h = 31 * h + val[i];
+              }
+              hash = h;
+          }
+          return h;
+      }
+      
+      //Boolean.java
+      public static int hashCode(boolean value) {
+          return value ? 1231 : 1237;
       }
       ```
-
+   
    3. `putVal()`方法
-
+   
       1. 先判断当前的Node数组是不是为空，为空代表第一次添加元素，就通过resize()方法对其进行扩容。
-
-      2. 然后计算出添加的新元素在Node数组中应该插入的位置的索引。
-
-         `(n-1) & hash`，其中n为当前Node数组的长度，hash为上一步根据key值计算出来的hash值。创建HashMap对象的时候提到传入的参数会被自动放大到最接近它的2的指数次幂的数。例如传入13，会变成16。此时n==16，n-1==15，15的二进制表示为0000 1111，只有最低4位为1，高位都为0，所以当15&hash值的时候，不管hash值有多大，最终&出来的值都会保持在0-15内，也就是Node数组长度之内。
-
-      3. 
-
+   2. 然后计算出添加的新元素在Node数组中应该插入的位置的索引。
+      1. `(n-1) & hash`，其中n为当前Node数组的长度，hash为上一步根据key值计算出来的hash值。创建HashMap对象的时候提到传入的参数会被自动放大到最接近它的2的指数次幂的数。例如传入13，会变成16。此时n==16，n-1==15，15的二进制表示为0000 1111，只有最低4位为1，高位都为0，所以当15&hash值的时候，不管hash值有多大，最终&出来的值都会保持在0-15内，也就是Node数组长度之内。
+   3. 判断Node数组在上一步计算得出的索引位置上是不是为空。
+         1. 如果为空，表示Node数组当前位置还没有数据，直接调用`tab[i] = newNode(hash, key, value, null)`插入新元素成功；//1
+      2. 如果不为空，表示Node数组当前位置已经有数据了，发生了hash冲突。这个时候继续判断当前Node数组当前索引位置上元素的hash值、key值和待插入元素的hash值、key值相不相同？
+            1. 
+   
       ```java
       final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                      boolean evict) {
@@ -105,7 +133,7 @@
                   e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
               else {
                   for (int binCount = 0; ; ++binCount) {
-                      if ((e = p.next) == null) {
+                   if ((e = p.next) == null) {
                           p.next = newNode(hash, key, value, null);
                           if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
                               treeifyBin(tab, hash);
@@ -133,5 +161,5 @@
       }
       
       ```
-
+   
       
