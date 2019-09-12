@@ -91,7 +91,6 @@ public int hashCode() {
        int h = hash;
        if (h == 0 && value.length > 0) {
            char val[] = value;
-   
            for (int i = 0; i < value.length; i++) {
                h = 31 * h + val[i];
            }
@@ -121,21 +120,32 @@ public int hashCode() {
    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                   boolean evict) {
        Node<K,V>[] tab; Node<K,V> p; int n, i;
+       //判断数组有没有进行初始化
        if ((tab = table) == null || (n = tab.length) == 0)
+           //初始化数组，扩容数组
            n = (tab = resize()).length;
+       //判断Node数组待插入位置有没有元素
        if ((p = tab[i = (n - 1) & hash]) == null)
+           //没有，直接插入，插入成功
            tab[i] = newNode(hash, key, value, null);
        else {
            Node<K,V> e; K k;
+           //判断key,hash值是不是相同，是，则替换value值。
            if (p.hash == hash &&
                ((k = p.key) == key || (key != null && key.equals(k))))
                e = p;
+           //判断p是不是红黑树
            else if (p instanceof TreeNode)
+              	//如果是红黑树，则向书里面添加元素
                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+           //不是红黑树
            else {
+               //binCount用于对整条链子进行计数，用于转变红黑树
                for (int binCount = 0; ; ++binCount) {
                 if ((e = p.next) == null) {
+                    //如果当前节点的下一个节点为空，则插入新元素
                        p.next = newNode(hash, key, value, null);
+                    	//如果binCount大于等于8-1=7时，则将链表转换成红黑树
                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
                            treeifyBin(tab, hash);
                        break;
@@ -143,9 +153,11 @@ public int hashCode() {
                    if (e.hash == hash &&
                        ((k = e.key) == key || (key != null && key.equals(k))))
                        break;
+                   //继续for循环
                    p = e;
                }
            }
+           //替换旧值
            if (e != null) { // existing mapping for key
                V oldValue = e.value;
                if (!onlyIfAbsent || oldValue == null)
@@ -155,7 +167,9 @@ public int hashCode() {
            }
        }
        ++modCount;
+       //判断Node数组的大小是否到达扩容的阈值
        if (++size > threshold)
+           //进行扩容
            resize();
        afterNodeInsertion(evict);
        return null;
@@ -170,22 +184,27 @@ public int hashCode() {
 
 ```java
 final Node<K,V>[] resize() {
+    //取到原来数组
     Node<K,V>[] oldTab = table;
+    //取到原来数组大小
     int oldCap = (oldTab == null) ? 0 : oldTab.length;
+    //取到旧的阈值,阈值=数组大小*负载因子；size*0.75f
     int oldThr = threshold;
     int newCap, newThr = 0;
+    //判断原来数组大小是不是大于0，大于表示扩容.
     if (oldCap > 0) {
         if (oldCap >= MAXIMUM_CAPACITY) {
             threshold = Integer.MAX_VALUE;
             return oldTab;
         }
+        //如果原来的容量*2小于最大容量并且大于等于默认初始化容量16，则扩大2倍
         else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
                  oldCap >= DEFAULT_INITIAL_CAPACITY)
             newThr = oldThr << 1; // double threshold
     }
     else if (oldThr > 0) // initial capacity was placed in threshold
         newCap = oldThr;
-    else {               // zero initial threshold signifies using defaults
+    else {               // 这里为Node数组初始化，默认大小1>>>4=16，阈值16*0.75f=12
         newCap = DEFAULT_INITIAL_CAPACITY;
         newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
     }
@@ -241,6 +260,33 @@ final Node<K,V>[] resize() {
         }
     }
     return newTab;
+}
+```
+
+# 链表转红黑树
+
+
+
+```java
+final void treeifyBin(Node<K,V>[] tab, int hash) {
+    int n, index; Node<K,V> e;
+    if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
+        resize();
+    else if ((e = tab[index = (n - 1) & hash]) != null) {
+        TreeNode<K,V> hd = null, tl = null;
+        do {
+            TreeNode<K,V> p = replacementTreeNode(e, null);
+            if (tl == null)
+                hd = p;
+            else {
+                p.prev = tl;
+                tl.next = p;
+            }
+            tl = p;
+        } while ((e = e.next) != null);
+        if ((tab[index] = hd) != null)
+            hd.treeify(tab);
+    }
 }
 ```
 
