@@ -72,6 +72,19 @@ private void grow(int minCapacity) {
 }
 ```
 
+## addAll方法
+
+```java
+public boolean addAll(Collection<? extends E> c) {
+    Object[] a = c.toArray();
+    int numNew = a.length;
+    ensureCapacityInternal(size + numNew);  // Increments modCount
+    System.arraycopy(a, 0, elementData, size, numNew);
+    size += numNew;
+    return numNew != 0;
+}
+```
+
 ## get方法
 
 ```java
@@ -104,6 +117,37 @@ public E remove(int index) {
     elementData[--size] = null; // clear to let GC do its work
 
     return oldValue;
+}
+
+public boolean remove(Object o) {
+    if (o == null) {
+        for (int index = 0; index < size; index++)
+            if (elementData[index] == null) {
+                fastRemove(index);
+                return true;
+            }
+    } else {
+        for (int index = 0; index < size; index++)
+            if (o.equals(elementData[index])) {
+                fastRemove(index);
+                return true;
+            }
+    }
+    return false;
+}
+```
+
+## clear方法
+
+```java
+public void clear() {
+    modCount++;
+
+    // clear to let GC do its work
+    for (int i = 0; i < size; i++)
+        elementData[i] = null;
+
+    size = 0;
 }
 ```
 
