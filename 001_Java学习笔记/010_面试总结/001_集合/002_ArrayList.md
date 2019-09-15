@@ -1,0 +1,111 @@
+## 构造方法
+
+1. 空参构造
+
+   1. 空参构造创建一个空的Object数组。
+
+   ```java
+   private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
+   
+   public ArrayList() {
+       this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+   }
+   ```
+
+2. 有参构造
+
+   ```java
+   public ArrayList(int initialCapacity) {
+       if (initialCapacity > 0) {
+           this.elementData = new Object[initialCapacity];
+       } else if (initialCapacity == 0) {
+           this.elementData = EMPTY_ELEMENTDATA;
+       } else {
+           throw new IllegalArgumentException("Illegal Capacity: "+
+                                              initialCapacity);
+       }
+   }
+   
+   ```
+
+## add方法
+
+```java
+private static final int DEFAULT_CAPACITY = 10;
+
+public boolean add(E e) {
+    ensureCapacityInternal(size + 1);  // Increments modCount!!
+    elementData[size++] = e;
+    return true;
+}
+
+private void ensureCapacityInternal(int minCapacity) {
+    ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
+}
+
+private static int calculateCapacity(Object[] elementData, int minCapacity) {
+    //如果是第一次add，则直接返回大小为10
+    if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+        return Math.max(DEFAULT_CAPACITY, minCapacity);
+    }
+    return minCapacity;
+}
+
+private void ensureExplicitCapacity(int minCapacity) {
+    modCount++;
+
+    // overflow-conscious code
+    if (minCapacity - elementData.length > 0)
+        grow(minCapacity);
+}
+
+private void grow(int minCapacity) {
+    // overflow-conscious code
+    int oldCapacity = elementData.length;
+    int newCapacity = oldCapacity + (oldCapacity >> 1);
+    if (newCapacity - minCapacity < 0)
+        newCapacity = minCapacity;
+    if (newCapacity - MAX_ARRAY_SIZE > 0)
+        newCapacity = hugeCapacity(minCapacity);
+    // minCapacity is usually close to size, so this is a win:
+    elementData = Arrays.copyOf(elementData, newCapacity);
+}
+```
+
+## get方法
+
+```java
+public E get(int index) {
+    rangeCheck(index);
+
+    return elementData(index);
+}
+
+//检查数组下标有没有越界（异常）
+private void rangeCheck(int index) {
+    if (index >= size)
+        throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+}
+```
+
+## remove方法
+
+```java
+public E remove(int index) {
+    rangeCheck(index);
+
+    modCount++;
+    E oldValue = elementData(index);
+
+    int numMoved = size - index - 1;
+    if (numMoved > 0)
+        System.arraycopy(elementData, index+1, elementData, index,
+                         numMoved);
+    elementData[--size] = null; // clear to let GC do its work
+
+    return oldValue;
+}
+```
+
+
+
