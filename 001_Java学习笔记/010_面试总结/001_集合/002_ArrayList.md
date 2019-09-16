@@ -1,3 +1,5 @@
+# ArrayList
+
 ## 构造方法
 
 1. 空参构造
@@ -148,6 +150,55 @@ public void clear() {
         elementData[i] = null;
 
     size = 0;
+}
+```
+
+
+
+# CopyOnWriteArrayList
+
+## 构造方法
+
+```java
+    public CopyOnWriteArrayList() {
+        setArray(new Object[0]);
+    }
+
+    final void setArray(Object[] a) {
+        array = a;
+    }
+
+    public CopyOnWriteArrayList(Collection<? extends E> c) {
+        Object[] elements;
+        if (c.getClass() == CopyOnWriteArrayList.class)
+            elements = ((CopyOnWriteArrayList<?>)c).getArray();
+        else {
+            elements = c.toArray();
+            // c.toArray might (incorrectly) not return Object[] (see 6260652)
+            if (elements.getClass() != Object[].class)
+                elements = Arrays.copyOf(elements, elements.length, Object[].class);
+        }
+        setArray(elements);
+    }
+
+```
+
+## add方法
+
+```java
+public boolean add(E e) {
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        Object[] elements = getArray();
+        int len = elements.length;
+        Object[] newElements = Arrays.copyOf(elements, len + 1);
+        newElements[len] = e;
+        setArray(newElements);
+        return true;
+    } finally {
+        lock.unlock();
+    }
 }
 ```
 
