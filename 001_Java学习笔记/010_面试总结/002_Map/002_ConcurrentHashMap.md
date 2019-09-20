@@ -2,6 +2,8 @@
 
 ### put方法
 
+主要思想：CAS
+
 ```java
 public V put(K key, V value) {
     return putVal(key, value, false);

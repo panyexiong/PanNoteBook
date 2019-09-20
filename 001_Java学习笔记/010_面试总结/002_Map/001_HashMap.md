@@ -182,6 +182,8 @@ public int hashCode() {
 
 - 初始化的时候使用resize()
 - 当size>threshold，调用resize()进行扩容
+- 新建一个容量为原来2倍的Node数组，然后遍历旧数组上的每个元素，重新计算每个元素在新数组中的存放位置，将旧数组上的每个元素转移到新数组中。
+- 然后将新的数组赋给HashMap底层的table数组，重新设置阈值。
 
 ```java
 
