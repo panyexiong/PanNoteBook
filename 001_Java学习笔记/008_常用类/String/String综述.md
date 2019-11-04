@@ -5,7 +5,7 @@
 - Java堆，存放所有对象实例和数组，是垃圾回收的主要区域。
 - 方法区：线程共享的，用于存放被虚拟机加载的类的元数据信息：常量、静态变量、即时编译器后的代码。
 - 常量池：常量池属于类信息的一部分，而类信息反映到JVM内存模型中对应方法区，也就是说，常量池位于方法区。常量池主要存放两大常量：字面量和符号引用。
-  - 字面量：字符串字面量、整形字面量和声明为final的常量值
+  - 字面量：字符串字面量、整形字面量、声明为final的常量值
   - 符号引用：类的接口的全限定名；字段的名称和描述符；方法的名称和描述符。
 
 ## 常量和变量
@@ -82,9 +82,87 @@ String s1 = "abc";
 String s = new String(s1);
 ```
 
+所以，通过new操作产生一个字符串”abc“时，会先去常量池中查找是否有”abc“对象，如果没有，则创建一个此字符串对象并放入常量池中。然后，在堆中再创建”abc“对象，并返回该对象的地址。
 
+## 字符串常量池
 
+### 情景1：字符串常量池
 
+JVM中存在着一个字符串常量池，其中保存着很多String对象，并且这些String对象可以被共享使用，因此提高了效率。我们可以通过intern方法手动入池。
 
+### 情景2：字符串连接符”+“
 
+```java
+public void test02() {
+    String s1 = "ab";
+    String s2 = "cd";
+    String s3 = s1 + s2;
+    String s4 = "abcd";
+    System.out.println(s3 == s4);	//false
+}
+```
 
+### 情景3：字符串的编译期优化
+
+```java
+public void test04() {
+    String str1 = "ab" + "cd";
+    String str2 = "abcd";
+    System.out.println(str1 == str2);
+
+    final String str3 = "cd";
+    String str4 = "ab" + str3;
+    System.out.println(str2 == str4);
+
+    String str5 = "b";
+    String str6 = "a" + str5;
+    String str7 = "ab";
+    System.out.println(str6 == str7);
+}
+//
+true
+true
+false
+```
+
+Java编译器对于类似 常量+字面量 的组合，其值在编译的时候就能够被确定。
+
+## 三大字符串类：String、StringBuilder、StringBuffer
+
+### 编译时优化与字符串连接符的本质
+
+```java
+public void test04() {
+    String s = "a" + "b" + "c";
+    String s1 = "a";
+    String s2 = "b";
+    String s3 = "c";
+    String s4 = s1 + s2 + s3;
+
+    System.out.println(s);
+    System.out.println(s4);
+}
+//
+abc
+abc
+```
+
+每做一次字符串连接操作 + 就产生一个StringBuilder对象，然后append后就扔掉。下次循环到达时，再重新new一个StringBuilder对象，然后append字符串，如此循环。事实上，如果我们直接采用StringBuilder对象进行append的话，我们可以节省N-1次创建和销毁对象的时间。所以对于循环中要进行字符串连接的应用，一般都是用StringBuilder对象。
+
+## String与（深）克隆
+
+克隆的定义意义：顾名思义，克隆就是制造一个对象的副本。一般地，根据所要克隆的对象的成员变量中是否含有引用类型，可以将克隆分为两种：浅克隆（Shallow Clone）和深克隆（Deep Clone），默认情况下使用Object中的clone方法进行克隆就是浅克隆，即完成对象域对域的拷贝。
+
+### Object中的clone（）方法
+
+在使用clone（）方法时，若该类未实现Cloneable接口，则抛出 java.lang.CloneNotSupportedException异常。
+
+Cloneable接口是一个标识性接口，即该接口不包含任何方法，但是如果一个类像合法的进行克隆，那么就必须实现这个接口。
+
+### Clone & Copy
+
+假设现在有一个Employee对象，Employee tobby = new Employee(“CMTobby”,5000)，通常, 我们会有这样的赋值Employee tom=tobby，这个时候只是简单了copy了一下reference，tom 和 tobby 都指向内存中同一个object，这样tom或者tobby对对象的修改都会影响到对方。
+
+### Shallow Clone & Deep Clone
+
+Clone是如何完成的呢？Object中的clone()方法在对某个对象实施克隆时对其是一无所知的，它仅仅是简单地执行域对域的copy，这就是Shallow Clone。这样，问题就来了，以Employee为例，它里面有一个域hireDay不是基本数据类型的变量，而是一个引用变量，经过clone之后克隆类只会产生一个新的引用，它和原始引用都指向同一个对象。
