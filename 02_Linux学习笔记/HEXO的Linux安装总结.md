@@ -14,7 +14,7 @@
 
    在下载目录下，可以找到我们下载的内容;是以.tar.xz结尾
 
-   ```
+   ```bash
    #ls -l
    //下面的不是指令
    -rw-rw-r--  1 panyexiong panyexiong  13039792 6月  29 21:11 node-v10.16.0-linux-x64.tar.xz
@@ -26,7 +26,7 @@
 
    我选择将文件打包（解压）到/home/software，这个目录是我的软件安装目录，可根据个人需求更换成其他路径。
 
-   ```
+   ```bash
    #tar -xvJf node-v10.16.0-linux-x64.tar.xz -C /home/software
    ```
 
@@ -34,14 +34,14 @@
 
    - 查看版本
 
-     ```
+     ```bash
      #node -v
      //如果成功看到版本号，则跳到第5步
      ```
 
    - 出现找不到的指令，则我们需要为解压文件夹/nodejs/bin/下的npm和node建立软连接
 
-     ```
+     ```bash
      #ln -s /home/software/nodejs/bin/npm /usr/local/bin/
      #ln -s /home/software/nodejs/bin/node /usr/local/bin/
      #node -v
